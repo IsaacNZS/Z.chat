@@ -49,7 +49,7 @@ const Chat = () => {
   );
 
   return (
-    <div className="flex w-full h-full mt-3 flex-col items-center">
+    <div className="flex w-full pt-17 h-full mt-3 flex-col items-center">
       <input
         type="search"
         value={search}
