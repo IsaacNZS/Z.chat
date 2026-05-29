@@ -90,9 +90,9 @@ const Home = () => {
             className="border-2 border-[#00aeff] rounded-full"
           />
           <i
-            className={`fa-solid absolute text-[20px] left-20 bottom-1 border-3 border-white rounded-full ${
-              onlineUsers.includes(user?._id) ? "text-[#00aeff]" : "text-black"
-            } fa-circle`}
+            className="fa-solid absolute text-[20px] left-20 bottom-1 border-3 border-white rounded-full 
+    text-[#00aeff]
+             fa-circle"
           ></i>
           <div className="flex flex-col">
             {" "}
