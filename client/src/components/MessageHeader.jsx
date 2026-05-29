@@ -29,13 +29,13 @@ const MessageHeader = () => {
   }, []);
 
   return (
-    <div className="flex relative items-center justify-between py-2 px-4">
-      <div className="flex items-center gap-39">
+    <div className="flex fixed top-0 z-50 bg-black w-full items-center justify-between py-2 px-4">
+      <div className="flex w-full items-center gap-39">
         {" "}
-        <div className="flex gap-5 items-center">
+        <div className="flex gap-8 items-center">
           <i
             onClick={() => navigate("/Chat")}
-            className="text-[#00aeff] text-3xl fa-solid fa-arrow-left"
+            className="text-[#00aeff] text-xl fa-solid fa-arrow-left"
           ></i>
           <img
             src={
@@ -45,8 +45,8 @@ const MessageHeader = () => {
             }
             alt="logo"
             style={{
-              width: "60px",
-              height: "60px",
+              width: "50px",
+              height: "50px",
             }}
             className="border-2 border-[#00aeff] rounded-full"
           />
@@ -58,10 +58,10 @@ const MessageHeader = () => {
           >
             {" "}
             <p className="text-[#00aeff]">
-              <span className="text-3xl font-bold"> {user?.username}</span>
+              <span className="text-xl font-bold"> {user?.username}</span>
             </p>
             <p
-              className={`text-[18px] ${
+              className={`text-[13px] ${
                 onlineUsers.includes(user?._id)
                   ? "text-[#00aeff]"
                   : "text-gray-400"
@@ -73,7 +73,7 @@ const MessageHeader = () => {
         </div>
         <i
           onClick={() => setMenu(!menu)}
-          className="fa-solid text-3xl font-bold text-[#3190d8] fa-bars"
+          className="fa-solid text-xl font-bold text-[#3190d8] fa-bars"
         ></i>
       </div>
 

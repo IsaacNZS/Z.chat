@@ -45,52 +45,54 @@ const Call = () => {
 
   return (
     <>
-      {alluser?.map((user) => (
-        <div
-          key={user._id}
-          onClick={() => {
-            navigate("/message");
-          }}
-          className={`
+      <div className="overflow-y-auto fixed top-12 w-full mt-2 h-[87%]">
+        {alluser?.map((user) => (
+          <div
+            key={user._id}
+            onClick={() => {
+              navigate(`/message/${user?._id}`);
+            }}
+            className={`
   flex px-3 py-2 border relative overflow-y-scroll mt-3 rounded-[20px] w-[93%]
   mx-3 border-red-400 gap-8
   transition-all duration-300
   hover:scale-[1.02]
  animate-[slideLeft_.4s_ease]
 `}
-        >
-          <img
-            src={
-              !user?.profileimg || user?.profileimg === ""
-                ? "/1.png"
-                : user?.profileimg
-            }
-            alt="logo"
-            style={{
-              width: "69px",
-              height: "69px",
-            }}
-            className="border-2 border-[#00aeff] rounded-full"
-          />
-          <i
-            className={`fa-solid absolute text-[13px] left-15 bottom-2 border-3 border-white rounded-full ${
-              onlineUsers.includes(user?._id)
-                ? "text-[#00aeff]"
-                : "text-gray-600"
-            } fa-circle`}
-          ></i>
-          <div className="flex flex-col">
-            {" "}
-            <p className="text-[#00aeff]">
-              <span className="text-3xl font-bold"> {user?.username}</span>
-            </p>
-            <p className="text-[#ffffff]">
-              <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
-              {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
-            </p>
+          >
+            <img
+              src={
+                !user?.profileimg || user?.profileimg === ""
+                  ? "/1.png"
+                  : user?.profileimg
+              }
+              alt="logo"
+              style={{
+                width: "55px",
+                height: "55px",
+              }}
+              className="border-2 border-[#00aeff] rounded-full"
+            />
+            <i
+              className={`fa-solid absolute text-[10px] left-12 bottom-3 border-3 border-white rounded-full ${
+                onlineUsers.includes(user?._id)
+                  ? "text-[#00aeff]"
+                  : "text-gray-600"
+              } fa-circle`}
+            ></i>
+            <div className="flex gap-1 flex-col">
+              {" "}
+              <p className="text-[#00aeff]">
+                <span className="text-xl font-bold"> {user?.username}</span>
+              </p>
+              <p className="text-[#ffffff] text-[11px]">
+                <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
+                {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </>
   );
 };

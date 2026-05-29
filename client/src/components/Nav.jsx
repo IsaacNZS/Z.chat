@@ -42,7 +42,7 @@ const Nav = () => {
   };
 
   return (
-    <div className="relative">
+    <div className="fixed top-0 z-50 w-full">
       {" "}
       <div className="flex bg-gray-900 items-center justify-between px-4 py-2">
         {" "}

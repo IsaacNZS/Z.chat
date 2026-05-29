@@ -49,60 +49,62 @@ const Chat = () => {
   );
 
   return (
-    <div className="flex w-full mt-3 flex-col items-center">
+    <div className="flex w-full h-full mt-3 flex-col items-center">
       <input
         type="search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         placeholder="Search..."
-        className="px-6 py-2 mb-2 rounded-full outline-none text-2xl font-bold active:border-none bg-blue-100 w-[90%]"
+        className="px-6 py-1 mb-2 rounded-full outline-none text-xl font-bold active:border-none bg-blue-100 w-[90%]"
       />{" "}
-      {filterUsers?.map((user) => (
-        <div
-          key={user._id}
-          onClick={() => {
-            navigate(`/message/${user?._id}`);
-          }}
-          className={`
+      <div className="overflow-y-auto w-[96%] mt-2 h-[88%]">
+        {filterUsers?.map((user) => (
+          <div
+            key={user._id}
+            onClick={() => {
+              navigate(`/message/${user?._id}`);
+            }}
+            className={`
   flex px-3 py-2 border relative overflow-y-scroll mt-3 rounded-[20px] w-[93%]
   mx-3 border-red-400 gap-8
   transition-all duration-300
   hover:scale-[1.02]
  animate-[slideLeft_.4s_ease]
 `}
-        >
-          <img
-            src={
-              !user?.profileimg || user?.profileimg === ""
-                ? "/1.png"
-                : user?.profileimg
-            }
-            alt="logo"
-            style={{
-              width: "69px",
-              height: "69px",
-            }}
-            className="border-2 border-[#00aeff] rounded-full"
-          />
-          <i
-            className={`fa-solid absolute text-[13px] left-15 bottom-2 border-3 border-white rounded-full ${
-              onlineUsers.includes(user?._id)
-                ? "text-[#00aeff]"
-                : "text-gray-600"
-            } fa-circle`}
-          ></i>
-          <div className="flex flex-col">
-            {" "}
-            <p className="text-[#00aeff]">
-              <span className="text-3xl font-bold"> {user?.username}</span>
-            </p>
-            <p className="text-[#ffffff]">
-              <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
-              {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
-            </p>
+          >
+            <img
+              src={
+                !user?.profileimg || user?.profileimg === ""
+                  ? "/1.png"
+                  : user?.profileimg
+              }
+              alt="logo"
+              style={{
+                width: "55px",
+                height: "55px",
+              }}
+              className="border-2 border-[#00aeff] rounded-full"
+            />
+            <i
+              className={`fa-solid absolute text-[10px] left-12 bottom-3 border-3 border-white rounded-full ${
+                onlineUsers.includes(user?._id)
+                  ? "text-[#00aeff]"
+                  : "text-gray-600"
+              } fa-circle`}
+            ></i>
+            <div className="flex gap-1 flex-col">
+              {" "}
+              <p className="text-[#00aeff]">
+                <span className="text-xl font-bold"> {user?.username}</span>
+              </p>
+              <p className="text-[#ffffff] text-[11px]">
+                <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
+                {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
+              </p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

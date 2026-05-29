@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Edit = () => {
   const [initial, setInitial] = useState();
@@ -47,6 +48,11 @@ const Edit = () => {
       );
       if (res.ok) {
         const data = await res.json();
+        toast.success(`🥳 ${data.msg} 🎉🎉`, {
+          richColors: true,
+          position: "top-center",
+          duration: 2000,
+        });
         navigate("/");
       }
     } catch (err) {

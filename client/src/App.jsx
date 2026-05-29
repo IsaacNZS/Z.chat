@@ -13,11 +13,11 @@ import Edit from "../pages/Edit";
 
 function MainLayout() {
   return (
-    <>
+    <div className="w-full h-screen">
       <Nav />
       <Outlet />
       <Footer />
-    </>
+    </div>
   );
 }
 

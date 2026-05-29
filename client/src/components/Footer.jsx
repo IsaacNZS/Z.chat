@@ -3,11 +3,11 @@ import { NavLink } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="flex absolute bottom-3 items-center gap-25 mx-15 mb-5">
+    <div className="flex fixed bottom-0 py-3 items-center w-full gap-25 justify-center">
       <NavLink
         to="/"
         className={({ isActive }) =>
-          `text-3xl font-bold transition-all duration-300 ease-in-out
+          `text-xl font-bold transition-all duration-300 ease-in-out
           ${isActive ? "text-cyan-400 scale-125" : "text-white"}`
         }
       >
@@ -17,7 +17,7 @@ const Footer = () => {
       <NavLink
         to="/Chat"
         className={({ isActive }) =>
-          `text-3xl font-bold transition-all duration-300 ease-in-out
+          `text-xl font-bold transition-all duration-300 ease-in-out
           ${isActive ? "text-cyan-400 scale-125" : "text-white"}`
         }
       >
@@ -27,7 +27,7 @@ const Footer = () => {
       <NavLink
         to="/Call"
         className={({ isActive }) =>
-          `text-3xl font-bold transition-all duration-300 ease-in-out
+          `text-xl font-bold transition-all duration-300 ease-in-out
           ${isActive ? "text-cyan-400 scale-125" : "text-white"}`
         }
       >

@@ -68,10 +68,10 @@ const Home = () => {
   }, []);
 
   return (
-    <>
+    <div className="fixed top-16 w-full h-[95%]">
       {" "}
-      <div className="flex relative flex-col">
-        <video width="600" playsInline loop autoPlay muted>
+      <div className="flex relative w-full flex-col">
+        <video width="screen" playsInline loop autoPlay muted>
           <source src={randomItem} type="video/mp4" />
         </video>
         <div className="flex absolute gap-5 items-end bottom-8 left-5">
@@ -84,28 +84,28 @@ const Home = () => {
             }
             alt="logo"
             style={{
-              width: "110px",
-              height: "110px",
+              width: "80px",
+              height: "80px",
             }}
             className="border-2 border-[#00aeff] rounded-full"
           />
           <i
-            className="fa-solid absolute text-[20px] left-20 bottom-1 border-3 border-white rounded-full 
+            className="fa-solid absolute text-[13px] left-15 bottom-1 border-3 border-white rounded-full 
     text-[#00aeff]
              fa-circle"
           ></i>
           <div className="flex flex-col">
             {" "}
             <p className="text-[#00aeff]">
-              <span className="text-5xl font-bold"> {user?.username}</span>
+              <span className="text-3xl font-bold"> {user?.username}</span>
             </p>
-            <p className="text-[#93ff8b]">
+            <p className="text-[#93ff8b] text-[12px]">
               <i className="fa-regular fa-calendar-days"></i>{" "}
               {new Date(user?.createdAt).toLocaleString()}
             </p>
           </div>
         </div>
-        <div className="flex mt-15 ml-7 flex-col text-xl text-white">
+        <div className="flex mt-15 ml-7 flex-col text-[12px] text-white">
           <p className="text-white">
             <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
             {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
@@ -118,7 +118,7 @@ const Home = () => {
             onClick={() => {
               (friend1(), setFriend(true));
             }}
-            className="text-2xl w-1/2 font-bold text-white px-4 py-2
+            className="text-xl w-1/2 font-bold text-white px-4 py-2
     border-b-2 border-transparent
     transition-all duration-300 ease-in-out
     focus:scale-105
@@ -132,7 +132,7 @@ const Home = () => {
             onClick={() => {
               (all(), setFriend(false));
             }}
-            className="text-2xl w-1/2 font-bold text-white px-4 py-2
+            className="text-xl w-1/2 font-bold text-white px-4 py-2
     border-b-2 border-transparent
     transition-all duration-300 ease-in-out
     focus:scale-105
@@ -144,16 +144,85 @@ const Home = () => {
           </button>
         </div>
       </div>
-      {friend ? (
-        Fuser?.length !== 0 ? (
-          Fuser?.map((user) => (
+      <div className="overflow-y-auto pb-105 h-full">
+        {" "}
+        {friend ? (
+          Fuser?.length !== 0 ? (
+            Fuser?.map((user) => (
+              <div
+                key={user._id}
+                onClick={() => {
+                  navigate(`/profile/${user._id}`);
+                }}
+                className={`
+  flex px-3 py-2 border relative mt-3 rounded-[20px]
+  mx-3 border-red-400 gap-8
+  transition-all duration-300
+  hover:scale-[1.02]
+  ${friend ? "animate-[slideRight_.4s_ease]" : "animate-[slideLeft_.4s_ease]"}
+`}
+              >
+                <img
+                  src={
+                    !user?.profileimg || user?.profileimg === ""
+                      ? "/1.png"
+                      : user?.profileimg
+                  }
+                  alt="logo"
+                  style={{
+                    width: "55px",
+                    height: "55px",
+                  }}
+                  className="border-2 border-[#00aeff] rounded-full"
+                />
+                <i
+                  className={`fa-solid absolute text-[10px] left-12 bottom-3 border-3 border-white rounded-full ${
+                    onlineUsers.includes(user?._id)
+                      ? "text-[#00aeff]"
+                      : "text-gray-600"
+                  } fa-circle`}
+                ></i>
+                <div className="flex flex-col">
+                  {" "}
+                  <p className="text-[#00aeff]">
+                    <span className="text-xl font-bold"> {user?.username}</span>
+                  </p>
+                  <p className="text-[#ffffff] gap-1 text-[11px]">
+                    <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
+                    {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="flex flex-col items-center mt-3 gap-3">
+              <img
+                src="/crying.gif"
+                style={{
+                  width: "170px",
+                  height: "140px",
+                }}
+                alt=""
+              />
+
+              <p className="text-gray-400 text-xl font-bold">
+                No friends yet 🥺
+              </p>
+
+              <p className="text-cyan-300">
+                Start chatting to make new friends 💬
+              </p>
+            </div>
+          )
+        ) : (
+          alluser?.map((user) => (
             <div
               key={user._id}
               onClick={() => {
                 navigate(`/profile/${user._id}`);
               }}
               className={`
-  flex px-3 py-2 border relative overflow-y-scroll mt-3 rounded-[20px]
+  flex px-3 py-2 border relative mt-3 rounded-[20px]
   mx-3 border-red-400 gap-8
   transition-all duration-300
   hover:scale-[1.02]
@@ -168,97 +237,33 @@ const Home = () => {
                 }
                 alt="logo"
                 style={{
-                  width: "69px",
-                  height: "69px",
+                  width: "55px",
+                  height: "55px",
                 }}
                 className="border-2 border-[#00aeff] rounded-full"
               />
               <i
-                className={`fa-solid absolute text-[13px] left-15 bottom-2 border-3 border-white rounded-full ${
+                className={`fa-solid absolute text-[10px] left-12 bottom-3 border-3 border-white rounded-full ${
                   onlineUsers.includes(user?._id)
                     ? "text-[#00aeff]"
                     : "text-gray-600"
                 } fa-circle`}
               ></i>
-              <div className="flex flex-col">
+              <div className="flex gap-1 flex-col">
                 {" "}
                 <p className="text-[#00aeff]">
-                  <span className="text-3xl font-bold"> {user?.username}</span>
+                  <span className="text-xl font-bold"> {user?.username}</span>
                 </p>
-                <p className="text-[#ffffff]">
+                <p className="text-[#ffffff] text-[11px]">
                   <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
                   {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
                 </p>
               </div>
             </div>
           ))
-        ) : (
-          <div className="flex flex-col items-center mt-10 gap-3">
-            <img
-              src="/crying.gif"
-              style={{
-                width: "200px",
-                height: "170px",
-              }}
-              alt=""
-            />
-
-            <p className="text-gray-400 text-xl font-bold">No friends yet 🥺</p>
-
-            <p className="text-cyan-300">
-              Start chatting to make new friends 💬
-            </p>
-          </div>
-        )
-      ) : (
-        alluser?.map((user) => (
-          <div
-            key={user._id}
-            onClick={() => {
-              navigate(`/profile/${user._id}`);
-            }}
-            className={`
-  flex px-3 py-2 border relative overflow-y-scroll mt-3 rounded-[20px]
-  mx-3 border-red-400 gap-8
-  transition-all duration-300
-  hover:scale-[1.02]
-  ${friend ? "animate-[slideRight_.4s_ease]" : "animate-[slideLeft_.4s_ease]"}
-`}
-          >
-            <img
-              src={
-                !user?.profileimg || user?.profileimg === ""
-                  ? "/1.png"
-                  : user?.profileimg
-              }
-              alt="logo"
-              style={{
-                width: "69px",
-                height: "69px",
-              }}
-              className="border-2 border-[#00aeff] rounded-full"
-            />
-            <i
-              className={`fa-solid absolute text-[13px] left-15 bottom-2 border-3 border-white rounded-full ${
-                onlineUsers.includes(user?._id)
-                  ? "text-[#00aeff]"
-                  : "text-gray-600"
-              } fa-circle`}
-            ></i>
-            <div className="flex flex-col">
-              {" "}
-              <p className="text-[#00aeff]">
-                <span className="text-3xl font-bold"> {user?.username}</span>
-              </p>
-              <p className="text-[#ffffff]">
-                <i className="fa-solid text-red-500 fa-book"></i> Bio :{" "}
-                {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
-              </p>
-            </div>
-          </div>
-        ))
-      )}
-    </>
+        )}
+      </div>
+    </div>
   );
 };
 

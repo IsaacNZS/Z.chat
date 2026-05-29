@@ -35,21 +35,35 @@ const MessageFooter = () => {
   return (
     <form
       onSubmit={add}
-      className="absolute bottom-3 px-3 w-full flex items-center justify-between"
+      className="fixed bottom-3 px-4 w-full flex items-center justify-between"
     >
-      <i className="fa-solid text-3xl text-[#00aeff] fa-plus"></i>
-      <input
+      <i className="fa-solid text-xl text-[#00aeff] fa-plus"></i>
+      <textarea
         name="msg"
         placeholder="Send message..."
         minLength={1}
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        className="text-2xl bg-[#2F2F2F] w-[77%] outline-none px-4 rounded-[20px] py-2 text-white font-bold"
-        type="text"
+        rows={1}
+        className="
+    text-xl
+    bg-[#2F2F2F]
+    w-[77%]
+    outline-none
+    px-4
+    rounded-[20px]
+    py-1
+    text-white
+    font-bold
+    resize-none
+    overflow-y-auto
+    max-h-30
+    wrap-break-word
+  "
       />
       <button type="submit">
         {" "}
-        <i className="text-3xl text-[#00aeff] fa-solid fa-paper-plane"></i>
+        <i className="text-xl text-[#00aeff] fa-solid fa-paper-plane"></i>
       </button>
     </form>
   );

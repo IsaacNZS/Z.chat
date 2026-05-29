@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { socket } from "../../socket";
 
 const MessageBody = () => {
   const [allmsg, setAllmsg] = useState([]);
   const { id } = useParams();
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [allmsg]);
 
   useEffect(() => {
     socket.on("receive_message", (data) => {
@@ -56,7 +63,7 @@ const MessageBody = () => {
   };
 
   return (
-    <div className="w-full relative h-192 overflow-y-auto bg-[#1D1D1D]">
+    <div className="w-full fixed top-15 h-[95%]  bg-[#1D1D1D]">
       {/* Background Layer */}
       <div
         className="absolute inset-0 opacity-50 z-0"
@@ -90,26 +97,25 @@ const MessageBody = () => {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col gap-3 px-3 py-2">
+      <div className="relative z-10 flex overflow-y-auto h-[90%] flex-col gap-3 px-3 py-2">
         <h1 className="text-5xl mb-7 font-bold text-[#00aeff] text-center">
           <span className="text-white text-4xl">Welcome to </span>
           Z.chat
         </h1>
-
         {allmsg.length !== 0 ? (
           allmsg.map((msg, index) =>
             msg?.readerId !== id ? (
               /* Receiver */
               <div
                 key={index}
-                className="px-4 py-2 self-start flex flex-col items-start max-w-[85%] bg-[rgb(191,224,248)] rounded-t-[10px] rounded-br-[10px]"
+                className="px-4 py-1 self-start flex flex-col items-start max-w-[85%] bg-[rgb(191,224,248)] rounded-t-[10px] rounded-br-[10px]"
               >
                 <p className="text-black break-all whitespace-pre-wrap w-full text-xl font-medium">
                   {msg?.content}
                 </p>
 
                 <div className="flex mt-2 items-center gap-2">
-                  <p className="text-black text-[12px]">
+                  <p className="text-black text-[10px]">
                     {new Date(msg?.createdAt).toLocaleTimeString()}
                   </p>
                 </div>
@@ -118,27 +124,27 @@ const MessageBody = () => {
               /* Sender */
               <div
                 key={index}
-                className="px-4 py-2 self-end flex flex-col text-right items-end max-w-[85%] bg-[#42c3ff] rounded-t-[10px] rounded-bl-[10px]"
+                className="px-4 py-1 self-end flex flex-col text-right items-end max-w-[85%] bg-[#42c3ff] rounded-t-[10px] rounded-bl-[10px]"
               >
                 <p className="text-black break-all whitespace-pre-wrap w-full text-xl font-medium">
                   {msg?.content}
                 </p>
 
-                <div className="flex items-center gap-7">
+                <div className="flex items-center gap-5">
                   <button
                     onClick={() => {
                       del(msg._id);
                     }}
                   >
                     {" "}
-                    <i className="fa-solid text-[12px] text-red-800 fa-trash"></i>
+                    <i className="fa-solid text-[10px] text-red-800 fa-trash"></i>
                   </button>
                   <div className="flex items-center mt-2 gap-2">
-                    <p className="text-black text-[12px]">
+                    <p className="text-black text-[10px]">
                       {new Date(msg?.createdAt).toLocaleTimeString()}
                     </p>
 
-                    <i className="text-black text-lg fa-solid fa-check"></i>
+                    <i className="text-black text-[12px] fa-solid fa-check"></i>
                   </div>
                 </div>
               </div>
@@ -151,16 +157,17 @@ const MessageBody = () => {
               src="/1.png"
               className="rounded-full"
               style={{
-                width: "200px",
-                height: "200px",
+                width: "100px",
+                height: "100px",
               }}
               alt=""
             />
-            <p className="text-3xl mt-3 text-white font-bold">
+            <p className="text-xl mt-3 text-white font-bold">
               🥳 Start A Chat 🎉🎉
             </p>
           </div>
         )}
+        <div ref={bottomRef}></div>
       </div>
     </div>
   );

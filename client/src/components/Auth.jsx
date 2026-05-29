@@ -95,7 +95,7 @@ const Auth = ({ header, footer, url }) => {
 
   return (
     <div className="w-full h-[98%] flex flex-col items-center">
-      <div className="flex flex-col gap-3 items-center justify-center">
+      <div className="flex flex-col gap-1 items-center justify-center">
         <img
           src="/logo.png"
           style={{
@@ -119,16 +119,16 @@ const Auth = ({ header, footer, url }) => {
             minLength={4}
             name="username"
             placeholder="Type UserName"
-            className="text-[#000000] w-full rounded-[10px] font-bold px-4 py-2 outline-none text-2xl bg-[#b8e9ff]"
+            className="text-[#000000] w-full rounded-[10px] font-bold px-4 py-2 outline-none text-xl bg-[#b8e9ff]"
           />
-          <div className="relative">
+          <div className="relative w-full">
             {" "}
             <input
               type={open ? "text" : "password"}
               minLength={6}
               name="password"
               placeholder="Type Password"
-              className="text-black w-full rounded-[10px] font-bold px-4 py-2 outline-none text-2xl bg-[#b8e9ff]"
+              className="text-black w-full rounded-[10px] font-bold px-4 py-2 outline-none text-xl bg-[#b8e9ff]"
             />
             {open ? (
               <i
