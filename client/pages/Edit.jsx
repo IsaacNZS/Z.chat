@@ -8,6 +8,7 @@ const Edit = () => {
   const [name, setName] = useState("");
   const [img, setImg] = useState(null);
   const [bio, setBio] = useState("");
+  const [loading, setloading] = useState(false);
 
   const userinfo = async () => {
     try {
@@ -38,11 +39,8 @@ const Edit = () => {
     formData.append("bio", bio);
     if (img) formData.append("image", img);
 
-    for (let pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
-
     try {
+      setloading(true);
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/user/edituser/${initial?._id}`,
         {
@@ -63,6 +61,8 @@ const Edit = () => {
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setloading(false);
     }
   };
   return (
@@ -157,7 +157,9 @@ const Edit = () => {
 
   "
           >
-            <span className="relative z-10">Edit Profile</span>
+            <span className="relative z-10">
+              {!loading ? "Edit Profile" : "Editting Profile..."}
+            </span>
           </button>
         </form>
       </div>
