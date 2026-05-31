@@ -10,6 +10,11 @@ import Profile from "../pages/Profile";
 import Message from "../pages/Message";
 import UserProvider from "../Context";
 import Edit from "../pages/Edit";
+import { socket } from "../socket";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { generatetoken, messaging } from "./notification/firebase";
+import { onMessage } from "firebase/messaging";
 
 function MainLayout() {
   return (
@@ -21,7 +26,20 @@ function MainLayout() {
   );
 }
 
+socket.on("receive_message", (data) => {
+  toast.success(data.content, {
+    richColors: true,
+    position: "top-center",
+    duration: 2000,
+  });
+});
+
 function App() {
+  useEffect(() => {
+    generatetoken();
+    onMessage(messaging, (payload) => {});
+  }, []);
+
   return (
     <>
       <UserProvider>

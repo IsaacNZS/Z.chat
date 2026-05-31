@@ -55,3 +55,15 @@ body {
     background-position: 300% 50%;
   }
 }
+@keyframes typingDot {
+  0%,
+  60%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  30% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}

@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const http = require("http");
 const { Server } = require("socket.io");
+const Message = require("./Schemas/messageSchemas");
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 mongoose.connect(process.env.DB_URL);
@@ -32,8 +33,46 @@ io.on("connection", (socket) => {
     io.emit("online_users", Array.from(onlineUsers.keys()));
   });
 
+  socket.on("typing", (data) => {
+    socket.broadcast.emit("show_typing", data);
+  });
+
+  socket.on("stop_typing", (data) => {
+    socket.broadcast.emit("hide_typing", data);
+  });
+
   socket.on("send_message", (data) => {
-    io.emit("receive_message", data);
+    const receiverSocketId = onlineUsers.get(String(data.readerId));
+
+    const senderSocketId = onlineUsers.get(String(data.senderId));
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("receive_message", data);
+    }
+
+    if (senderSocketId) {
+      io.to(senderSocketId).emit("receive_message", data);
+    }
+  });
+
+  socket.on("seen_message", async (data) => {
+    await Message.updateMany(
+      {
+        senderId: data.senderId,
+        readerId: data.receiverId,
+        seen: false,
+      },
+      { seen: true },
+    );
+
+    const receiverSocketId = onlineUsers.get(String(data.senderId));
+
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("message_seen", {
+        senderId: data.senderId,
+        receiverId: data.receiverId,
+      });
+    }
   });
 
   socket.on("disconnect", () => {
@@ -59,7 +98,9 @@ app.use(
     credentials: true,
   }),
 );
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use(cookieParser());
 app.use("/user", userrouter);
 app.use("/message", mesrouter);

@@ -2,6 +2,8 @@ const userDB = require("../Schemas/userSchemas");
 const messageDb = require("../Schemas/messageSchemas");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const admin = require("../firebaseAdmin");
+const cloudinary = require("../utils/cloudinary");
 
 const get = async (req, res) => {
   try {
@@ -44,6 +46,8 @@ const post = async (req, res) => {
     const { readerid } = req.params;
     const userid = req.user.id;
     const postmsg = req.body.msg;
+    const receiver = await userDB.findById(readerid);
+    const sender = await userDB.findById(userid);
 
     if (!userid || !readerid) {
       return res.status(400).json({
@@ -59,6 +63,17 @@ const post = async (req, res) => {
       content: postmsg,
     }).save();
 
+    if (receiver?.fcmToken) {
+      const test = await admin.messaging().send({
+        token: receiver.fcmToken,
+        notification: {
+          title: sender.username,
+          body: postmsg,
+          imageUrl: sender.profileimg,
+        },
+      });
+    }
+
     return res
       .status(200)
       .json({ con: true, msg: "Message Success!", result: newMessage });
@@ -69,15 +84,6 @@ const post = async (req, res) => {
       msg: "Server Error",
     });
   }
-};
-
-const patch = async (req, res) => {
-  const { id } = req.params;
-  const postmsg = req.body.msg;
-  await messageDb.findByIdAndUpdate(id, {
-    content: postmsg,
-  });
-  res.status(200).json({ con: true, msg: "Message Edited" });
 };
 
 const del = async (req, res) => {
@@ -116,7 +122,6 @@ const friends = async (req, res) => {
 module.exports = {
   get,
   post,
-  patch,
   del,
   friends,
 };

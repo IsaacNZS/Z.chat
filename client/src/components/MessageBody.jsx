@@ -1,31 +1,111 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { socket } from "../../socket";
+import { toast } from "sonner";
 
 const MessageBody = () => {
   const [allmsg, setAllmsg] = useState([]);
   const { id } = useParams();
   const bottomRef = useRef(null);
+  const [user, setUser] = useState(null);
 
+  const userinfo = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.result);
+      } else {
+        navigate("/auth/login");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    userinfo();
+  }, []);
+
+  //message-seen
+  useEffect(() => {
+    socket.on("message_seen", (data) => {
+      setAllmsg((prev) =>
+        prev.map((msg) =>
+          String(msg.senderId) === String(data.senderId) &&
+          String(msg.readerId) === String(data.receiverId)
+            ? { ...msg, seen: true }
+            : msg,
+        ),
+      );
+    });
+
+    return () => {
+      socket.off("message_seen");
+    };
+  }, []);
+
+  //message-scroll
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
     });
   }, [allmsg]);
 
+  //seem-true
+  useEffect(() => {
+    if (!user?._id || !id) return;
+
+    socket.emit("seen_message", {
+      senderId: id,
+      receiverId: user._id,
+    });
+  }, [id, user]);
+
+  //message-show
   useEffect(() => {
     socket.on("receive_message", (data) => {
-      setAllmsg((prev) => [...prev, data]);
+      const isCurrentChat =
+        (String(data.senderId) === String(id) &&
+          String(data.readerId) === String(user?._id)) ||
+        (String(data.senderId) === String(user?._id) &&
+          String(data.readerId) === String(id));
+
+      if (isCurrentChat) {
+        setAllmsg((prev) => [...prev, data]);
+      }
+
+      if (
+        String(data.senderId) === String(id) &&
+        String(data.readerId) === String(user?._id)
+      ) {
+        socket.emit("seen_message", {
+          senderId: id,
+          receiverId: user?._id,
+        });
+        return;
+      }
+
+      if (String(data.senderId) !== String(user?._id)) {
+        toast.success(data.content, {
+          richColors: true,
+          position: "top-center",
+          duration: 2000,
+        });
+      }
     });
 
     socket.on("receive_delete_message", (data) => {
-      setAllmsg((prev) => prev.filter((msg) => msg._id !== data._id));
+      setAllmsg((prev) => prev.filter((msg) => msg?._id !== data?._id));
     });
 
     return () => {
       socket.off("receive_message");
+      socket.off("receive_delete_message");
     };
-  }, []);
+  }, [user, id]);
 
   const all = async () => {
     try {
@@ -44,7 +124,7 @@ const MessageBody = () => {
 
   useEffect(() => {
     all();
-  }, []);
+  }, [id]);
 
   const del = async (id) => {
     try {
@@ -124,7 +204,7 @@ const MessageBody = () => {
               /* Sender */
               <div
                 key={index}
-                className="px-4 py-1 self-end flex flex-col text-right items-end max-w-[85%] bg-[#42c3ff] rounded-t-[10px] rounded-bl-[10px]"
+                className="px-4 py-1 self-end flex flex-col text-left items-end max-w-[85%] bg-[#42c3ff] rounded-t-[10px] rounded-bl-[10px]"
               >
                 <p className="text-black break-all whitespace-pre-wrap w-full text-xl font-medium">
                   {msg?.content}
@@ -143,8 +223,15 @@ const MessageBody = () => {
                     <p className="text-black text-[10px]">
                       {new Date(msg?.createdAt).toLocaleTimeString()}
                     </p>
-
-                    <i className="text-black text-[12px] fa-solid fa-check"></i>
+                    {!msg?.seen ? (
+                      <i className="text-blue-700 text-[12px] fa-solid fa-check"></i>
+                    ) : (
+                      <div className="flex">
+                        {" "}
+                        <i className="text-blue-700 text-[12px] fa-solid fa-check"></i>
+                        <i className="text-blue-700 text-[12px] fa-solid fa-check"></i>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

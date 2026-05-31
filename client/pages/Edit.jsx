@@ -5,6 +5,9 @@ import { toast } from "sonner";
 const Edit = () => {
   const [initial, setInitial] = useState();
   const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [img, setImg] = useState(null);
+  const [bio, setBio] = useState("");
 
   const userinfo = async () => {
     try {
@@ -28,24 +31,27 @@ const Edit = () => {
 
   const edit = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name");
-    const img = formData.get("img");
-    const bio = formData.get("bio");
+
+    const formData = new FormData();
+
+    formData.append("name", name || initial.username);
+    formData.append("bio", bio);
+    if (img) formData.append("image", img);
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/user/edituser/${initial?._id}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({
-            name: name,
-            img: img,
-            bio: bio,
-          }),
+          body: formData,
         },
       );
+
       if (res.ok) {
         const data = await res.json();
         toast.success(`🥳 ${data.msg} 🎉🎉`, {
@@ -94,19 +100,27 @@ const Edit = () => {
             defaultValue={initial?.username}
             minLength={4}
             name="name"
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
             placeholder="Type New UserName"
             className="text-[#000000] w-full rounded-[10px] font-bold px-4 py-2 outline-none text-2xl bg-[#b8e9ff]"
           />
           <input
-            type="text"
-            name="img"
-            defaultValue={initial && initial.profileimg}
+            type="file"
+            name="image"
+            onChange={(e) => {
+              setImg(e.target.files[0]);
+            }}
             placeholder="Paste Profile Url"
             className="text-black w-full rounded-[10px] font-bold px-4 py-2 outline-none text-2xl bg-[#b8e9ff]"
           />
           <input
             type="text"
             name="bio"
+            onChange={(e) => {
+              setBio(e.target.value);
+            }}
             defaultValue={initial ? initial.bio : "❤️GOD BLESS YOU❤️"}
             placeholder="Type New Bio"
             className="text-black w-full rounded-[10px] font-bold px-4 py-2 outline-none text-2xl bg-[#b8e9ff]"

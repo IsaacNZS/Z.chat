@@ -1,11 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { socket } from "../../socket";
 
 const MessageFooter = () => {
-  const [allmsg, setAllmsg] = useState([]);
   const { id } = useParams();
   const [input, setInput] = useState("");
+  const textareaRef = useRef(null);
+  const [typing, setTyping] = useState();
+  const [user, setUser] = useState(null);
+  const typingTimeout = useRef(null);
+
+  const userinfo = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.result);
+      } else {
+        navigate("/auth/login");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    userinfo();
+  }, []);
+
+  useEffect(() => {
+    socket.on("show_typing", (data) => {
+      if (data.senderId === id) {
+        setTyping(true);
+      }
+    });
+
+    socket.on("hide_typing", (data) => {
+      if (data.senderId === id) {
+        setTyping(false);
+      }
+    });
+
+    return () => {
+      socket.off("show_typing");
+      socket.off("hide_typing");
+    };
+  }, [id]);
 
   const add = async (event) => {
     event.preventDefault();
@@ -33,39 +75,111 @@ const MessageFooter = () => {
   };
 
   return (
-    <form
-      onSubmit={add}
-      className="fixed bottom-3 px-4 w-full flex items-center justify-between"
-    >
-      <i className="fa-solid text-xl text-[#00aeff] fa-plus"></i>
-      <textarea
-        name="msg"
-        placeholder="Send message..."
-        minLength={1}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        rows={1}
-        className="
-    text-xl
+    <div>
+      <div> </div>
+      <form
+        onSubmit={add}
+        className="fixed bottom-3 px-4 w-full flex items-end justify-between"
+      >
+        <i className="fa-solid text-2xl text-[#00aeff] fa-plus"></i>
+        <div className="flex w-full items-center gap-1 justify-center flex-col">
+          {typing && (
+            <div className="flex w-full items-center">
+              {" "}
+              <img
+                src="/bell.png"
+                alt="logo"
+                style={{
+                  width: "27px",
+                  height: "25px",
+                }}
+                className="animate-spin  rounded-full"
+              />
+              <div className="flex items-center gap-1">
+                <span
+                  className="w-2 h-2 rounded-full bg-yellow-500"
+                  style={{ animation: "typingDot 1.4s infinite" }}
+                />
+                <span
+                  className="w-2 h-2 rounded-full bg-yellow-500"
+                  style={{
+                    animation: "typingDot 1.4s infinite",
+                    animationDelay: "0.2s",
+                  }}
+                />
+                <span
+                  className="w-2 h-2 rounded-full bg-yellow-500"
+                  style={{
+                    animation: "typingDot 1.4s infinite",
+                    animationDelay: "0.4s",
+                  }}
+                />
+                <span
+                  className="w-2 h-2 rounded-full bg-yellow-500"
+                  style={{
+                    animation: "typingDot 1.4s infinite",
+                    animationDelay: "0.6s",
+                  }}
+                />
+                <span
+                  className="w-2 h-2 rounded-full bg-yellow-500"
+                  style={{
+                    animation: "typingDot 1.4s infinite",
+                    animationDelay: "0.8s",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+          <textarea
+            ref={textareaRef}
+            name="msg"
+            placeholder="Send message..."
+            value={input}
+            rows={1}
+            onChange={(e) => {
+              setInput(e.target.value);
+              // auto grow
+              textareaRef.current.style.height = "auto";
+              textareaRef.current.style.height =
+                textareaRef.current.scrollHeight + "px";
+              if (!user?._id) return;
+
+              socket.emit("typing", {
+                senderId: user._id,
+                readerId: id,
+              });
+
+              clearTimeout(typingTimeout.current);
+
+              typingTimeout.current = setTimeout(() => {
+                socket.emit("stop_typing", {
+                  senderId: user._id,
+                  readerId: id,
+                });
+              }, 1000);
+            }}
+            className="
+    text-lg
     bg-[#2F2F2F]
-    w-[77%]
+    w-[80%]
     outline-none
     px-4
     rounded-[20px]
-    py-1
+    py-2
     text-white
-    font-bold
     resize-none
-    overflow-y-auto
     max-h-30
-    wrap-break-word
+    overflow-y-hidden
   "
-      />
-      <button type="submit">
-        {" "}
-        <i className="text-xl text-[#00aeff] fa-solid fa-paper-plane"></i>
-      </button>
-    </form>
+          />
+        </div>
+        <button type="submit">
+          {" "}
+          <i className="text-2xl text-[#00aeff] fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
+    </div>
   );
 };
 

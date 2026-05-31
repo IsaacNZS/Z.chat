@@ -1,6 +1,8 @@
 const userDB = require("../Schemas/userSchemas");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("../utils/cloudinary");
+const streamifier = require("streamifier");
 
 const register = async (req, res) => {
   try {
@@ -85,20 +87,56 @@ const get = async (req, res) => {
   });
 };
 
-const patch = async (req, res) => {
-  const { id } = req.params;
-  const img = req.body.img;
-  const name = req.body.name;
-  const bio = req.body.bio;
+//helper to save photo
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "profile-images",
+      },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      },
+    );
 
-  const result = await userDB.findByIdAndUpdate(id, {
-    username: name,
-    profileimg: img,
-    bio,
+    streamifier.createReadStream(buffer).pipe(stream);
   });
-  res
-    .status(200)
-    .json({ con: true, msg: "Successfully Updated", result: result });
+};
+
+const patch = async (req, res) => {
+  try {
+    let imageUrl;
+
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.buffer);
+
+      imageUrl = result.secure_url;
+    }
+
+    const updatedUser = await userDB.findByIdAndUpdate(
+      req.params.id,
+      {
+        username: req.body.name,
+        bio: req.body.bio,
+        ...(imageUrl && { profileimg: imageUrl }),
+      },
+      {
+        returnDocument: "after",
+      },
+    );
+
+    res.status(200).json({
+      con: true,
+      msg: "Successfully Updated",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      msg: "Server Error",
+    });
+  }
 };
 
 const del = async (req, res) => {
@@ -112,6 +150,26 @@ const userInfo = async (req, res) => {
   res.status(200).json({ con: true, msg: "User Info", result: user });
 };
 
+const tokenpost = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const userId = req.user.id;
+
+    await userDB.findByIdAndUpdate(userId, {
+      fcmToken: token,
+    });
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+    });
+  }
+};
+
 module.exports = {
   login,
   register,
@@ -121,4 +179,5 @@ module.exports = {
   patch,
   del,
   userInfo,
+  tokenpost,
 };
