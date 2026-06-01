@@ -8,6 +8,7 @@ const MessageBody = () => {
   const { id } = useParams();
   const bottomRef = useRef(null);
   const [user, setUser] = useState(null);
+  const sendSound = new Audio("/msgsend.mp3");
 
   const userinfo = async () => {
     try {
@@ -95,6 +96,7 @@ const MessageBody = () => {
           duration: 2000,
         });
       }
+      sendSound.play();
     });
 
     socket.on("receive_delete_message", (data) => {

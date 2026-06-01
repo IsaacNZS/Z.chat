@@ -9,6 +9,8 @@ const MessageFooter = () => {
   const [typing, setTyping] = useState();
   const [user, setUser] = useState(null);
   const typingTimeout = useRef(null);
+  const typingSound = new Audio("/typing.mp3");
+  typingSound.volume = 0.3;
 
   const userinfo = async () => {
     try {
@@ -35,6 +37,8 @@ const MessageFooter = () => {
       if (data.senderId === id) {
         setTyping(true);
       }
+
+      typingSound.play();
     });
 
     socket.on("hide_typing", (data) => {
