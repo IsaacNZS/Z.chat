@@ -74,6 +74,7 @@ const MessageFooter = () => {
       );
       const data = await res.json();
       socket.emit("send_message", data.result);
+      setEmoji(false);
       if (res.ok) setInput("");
     } catch (error) {
       console.log(error);

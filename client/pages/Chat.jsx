@@ -146,7 +146,7 @@ const Chat = () => {
                 </p>
               </div>
               {count > 0 && (
-                <p className="text-[16px] font-bold absolute top-[-1] right-2 px-2 bg-green-500 text-white border rounded-full">
+                <p className="text-[16px] font-bold absolute top-5 right-2 px-2 bg-green-500 text-white border rounded-full">
                   {count}
                 </p>
               )}
