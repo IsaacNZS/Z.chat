@@ -120,9 +120,19 @@ const friends = async (req, res) => {
   }
 };
 
+const unread = async (req, res) => {
+  const { id } = req.params;
+  const msg = await messageDb.find({
+    readerId: id,
+    seen: false,
+  });
+  res.status(200).json({ con: true, msg: "success", result: msg });
+};
+
 module.exports = {
   get,
   post,
   del,
+  unread,
   friends,
 };

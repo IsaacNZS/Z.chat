@@ -31,11 +31,7 @@ function App() {
   const navigate = useNavigate();
   const notifySound = new Audio("/noti.mp3");
   const lastSoundTimeRef = useRef(0);
-  useEffect(() => {
-    if ("vibrate" in navigator) {
-      navigator.vibrate([200, 100, 200]);
-    }
-  }, []);
+
   useEffect(() => {
     const handler = (data) => {
       toast.success(data.content, {

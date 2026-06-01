@@ -6,6 +6,7 @@ const upload = require("../utils/multer");
 
 router.get("/allmessage/:readerid", protectroute, controller.get);
 router.get("/friends/:id", protectroute, controller.friends);
+router.get("/unread/:id", protectroute, controller.unread);
 router.post("/addmessage/:readerid", protectroute, controller.post);
 
 router.delete("/deletemessage/:id", protectroute, controller.del);

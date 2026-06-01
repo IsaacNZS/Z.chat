@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { socket } from "../../socket";
+import Emoji from "./Emoji";
 
 const MessageFooter = () => {
   const { id } = useParams();
@@ -9,6 +10,7 @@ const MessageFooter = () => {
   const [typing, setTyping] = useState();
   const [user, setUser] = useState(null);
   const typingTimeout = useRef(null);
+  const [emoji, setEmoji] = useState(false);
   const typingSound = new Audio("/typing.mp3");
   typingSound.volume = 0.3;
 
@@ -88,7 +90,10 @@ const MessageFooter = () => {
   return (
     <div className="w-full flex flex-col relative">
       <form onSubmit={add} className="px-4 py-2 flex items-end justify-between">
-        <i className="fa-solid text-2xl text-[#00aeff] fa-plus"></i>
+        <i
+          onClick={() => setEmoji(!emoji)}
+          className="fa-solid text-2xl text-[#00aeff] fa-plus"
+        ></i>
         <div className="flex w-full items-center gap-1 justify-center flex-col">
           {typing && (
             <div className="flex w-full items-center">
@@ -183,6 +188,7 @@ const MessageFooter = () => {
           <i className="text-2xl text-[#00aeff] fa-solid fa-paper-plane"></i>
         </button>
       </form>
+      {emoji && <Emoji setInput={setInput} />}
     </div>
   );
 };

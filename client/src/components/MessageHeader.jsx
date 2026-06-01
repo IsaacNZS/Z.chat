@@ -30,7 +30,7 @@ const MessageHeader = () => {
 
   return (
     <div className="flex fixed top-0 z-50 bg-black w-full items-center justify-between py-2 px-4">
-      <div className="flex w-full items-center gap-39">
+      <div className="flex w-full justify-between items-center gap-39">
         {" "}
         <div className="flex gap-8 items-center">
           <i
