@@ -27,12 +27,35 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  // Customize notification here
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: payload.notification.image,
-  };
+  self.registration.showNotification(payload.data.title, {
+    body: payload.data.body,
+    icon: payload.data.image || "/1.png",
+    badge: "/logo192.png",
+    image: payload.data.image || "/1.png",
+    tag: "message",
+    renotify: true,
+    requireInteraction: true,
+    vibrate: [200, 100, 200, 100, 200],
+    timestamp: Date.now(),
+    data: {
+      url: `/message/${payload.data.senderId}`,
+    },
+    actions: [
+      {
+        action: "open",
+        title: "💬 Open Chat",
+      },
+      {
+        action: "close",
+        title: "❌ Close",
+      },
+    ],
+  });
+});
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  if (event.action === "close") return;
+
+  event.waitUntil(clients.openWindow(event.notification.data?.url || "/"));
 });

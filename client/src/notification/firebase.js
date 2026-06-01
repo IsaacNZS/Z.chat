@@ -17,22 +17,28 @@ const app = initializeApp(firebaseConfig);
 export const messaging = getMessaging(app);
 
 export const generatetoken = async () => {
-  const permistion = await Notification.requestPermission();
-  if (permistion === "granted") {
-    const token = await getToken(messaging, {
-      vapidKey:
-        "BO69W3WByro7ckdmYOX18aMGseH0POLeSOgc6GDG8x2tflTeEmqobE5P-xmGqrJtBK5kbQqxDFpwxCy00wHrS0Y",
-    });
+  const permission = await Notification.requestPermission();
 
-    await fetch(`${import.meta.env.VITE_API_URL}/user/savetoken`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        token,
-      }),
-    });
-  }
+  if (permission !== "granted") return;
+
+  const registration = await navigator.serviceWorker.register(
+    "/firebase-messaging-sw.js",
+  );
+
+  const token = await getToken(messaging, {
+    vapidKey:
+      "BO69W3WByro7ckdmYOX18aMGseH0POLeSOgc6GDG8x2tflTeEmqobE5P-xmGqrJtBK5kbQqxDFpwxCy00wHrS0Y",
+    serviceWorkerRegistration: registration,
+  });
+
+  await fetch(`${import.meta.env.VITE_API_URL}/user/savetoken`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      token,
+    }),
+  });
 };

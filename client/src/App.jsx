@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useEffect } from "react";
 import { generatetoken, messaging } from "./notification/firebase";
 import { onMessage } from "firebase/messaging";
+import { useNavigate } from "react-router-dom";
 
 function MainLayout() {
   return (
@@ -26,15 +27,38 @@ function MainLayout() {
   );
 }
 
-socket.on("receive_message", (data) => {
-  toast.success(data.content, {
-    richColors: true,
-    position: "top-center",
-    duration: 2000,
-  });
-});
-
 function App() {
+  const navigate = useNavigate();
+  const notifySound = new Audio("/noti.mp3");
+  let lastSoundTime = 0;
+
+  useEffect(() => {
+    const handler = (data) => {
+      toast.success(data.content, {
+        richColors: true,
+        position: "top-center",
+        duration: 5000,
+        action: {
+          label: "show",
+          onClick: () => navigate(`/message/${data.senderId}`),
+        },
+      });
+
+      const now = Date.now();
+
+      if (now - lastSoundTimeRef.current > 1000) {
+        notifySound.play();
+        lastSoundTimeRef.current = now;
+      }
+    };
+
+    socket.on("receive_message", handler);
+
+    return () => {
+      socket.off("receive_message", handler); // 🔥 important
+    };
+  }, [navigate]);
+
   useEffect(() => {
     generatetoken();
     onMessage(messaging, (payload) => {});

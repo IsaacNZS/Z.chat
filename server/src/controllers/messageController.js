@@ -66,10 +66,11 @@ const post = async (req, res) => {
     if (receiver?.fcmToken) {
       const test = await admin.messaging().send({
         token: receiver.fcmToken,
-        notification: {
+        data: {
           title: sender.username,
           body: postmsg,
-          imageUrl: sender.profileimg,
+          image: String(sender.profileimg || ""),
+          senderId: String(sender._id),
         },
       });
     }
