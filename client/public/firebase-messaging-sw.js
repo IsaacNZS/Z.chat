@@ -30,12 +30,12 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(payload.data.title, {
     body: payload.data.body,
     icon: payload.data.image || "/1.png",
-    badge: "/logo192.png",
+    badge: "/logo512.png",
     image: payload.data.image || "/1.png",
     tag: "message",
     renotify: true,
     requireInteraction: true,
-    vibrate: [200, 100, 200, 100, 200],
+    vibrate: [200, 100, 200],
     timestamp: Date.now(),
     data: {
       url: `/message/${payload.data.senderId}`,

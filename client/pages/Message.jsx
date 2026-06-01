@@ -5,7 +5,7 @@ import MessageFooter from "../src/components/MessageFooter";
 
 const Message = () => {
   return (
-    <div className="w-full h-screen">
+    <div className="h-dvh w-full flex flex-col bg-[#1D1D1D]">
       <MessageHeader />
       <MessageBody />
       <MessageFooter />

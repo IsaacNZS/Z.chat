@@ -145,7 +145,7 @@ const MessageBody = () => {
   };
 
   return (
-    <div className="w-full fixed top-15 h-[95%]  bg-[#1D1D1D]">
+    <div className="flex-1 bg-[#1D1D1D] overflow-hidden w-full">
       {/* Background Layer */}
       <div
         className="absolute inset-0 opacity-50 z-0"
@@ -179,8 +179,8 @@ const MessageBody = () => {
       />
 
       {/* Content */}
-      <div className="relative z-10 flex overflow-y-auto h-[90%] flex-col gap-3 px-3 py-2">
-        <h1 className="text-5xl mb-7 font-bold text-[#00aeff] text-center">
+      <div className="relative z-10 h-full overflow-y-auto flex flex-col gap-3 px-3 py-2">
+        <h1 className="text-5xl mb-7 mt-14 font-bold text-[#00aeff] text-center">
           <span className="text-white text-4xl">Welcome to </span>
           Z.chat
         </h1>

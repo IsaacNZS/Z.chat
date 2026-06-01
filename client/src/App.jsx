@@ -12,7 +12,7 @@ import UserProvider from "../Context";
 import Edit from "../pages/Edit";
 import { socket } from "../socket";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { generatetoken, messaging } from "./notification/firebase";
 import { onMessage } from "firebase/messaging";
 import { useNavigate } from "react-router-dom";
@@ -30,8 +30,12 @@ function MainLayout() {
 function App() {
   const navigate = useNavigate();
   const notifySound = new Audio("/noti.mp3");
-  let lastSoundTime = 0;
-
+  const lastSoundTimeRef = useRef(0);
+  useEffect(() => {
+    if ("vibrate" in navigator) {
+      navigator.vibrate([200, 100, 200]);
+    }
+  }, []);
   useEffect(() => {
     const handler = (data) => {
       toast.success(data.content, {

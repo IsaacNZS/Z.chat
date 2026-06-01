@@ -78,13 +78,16 @@ const MessageFooter = () => {
     }
   };
 
+  useEffect(() => {
+    if (!textareaRef.current) return;
+
+    textareaRef.current.style.height = "auto";
+    textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+  }, [input]);
+
   return (
-    <div>
-      <div> </div>
-      <form
-        onSubmit={add}
-        className="fixed bottom-3 px-4 w-full flex items-end justify-between"
-      >
+    <div className="w-full flex flex-col relative">
+      <form onSubmit={add} className="px-4 py-2 flex items-end justify-between">
         <i className="fa-solid text-2xl text-[#00aeff] fa-plus"></i>
         <div className="flex w-full items-center gap-1 justify-center flex-col">
           {typing && (
@@ -143,10 +146,7 @@ const MessageFooter = () => {
             rows={1}
             onChange={(e) => {
               setInput(e.target.value);
-              // auto grow
-              textareaRef.current.style.height = "auto";
-              textareaRef.current.style.height =
-                textareaRef.current.scrollHeight + "px";
+
               if (!user?._id) return;
 
               socket.emit("typing", {
