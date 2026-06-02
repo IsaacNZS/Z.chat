@@ -16,6 +16,7 @@ import { useEffect, useRef } from "react";
 import { generatetoken, messaging } from "./notification/firebase";
 import { onMessage } from "firebase/messaging";
 import { useNavigate } from "react-router-dom";
+import VideoCall from "../pages/VideoCall";
 
 function MainLayout() {
   return (
@@ -30,7 +31,69 @@ function MainLayout() {
 function App() {
   const navigate = useNavigate();
   const notifySound = new Audio("/noti.mp3");
+  const callingSound = new Audio("/calling.mp3");
   const lastSoundTimeRef = useRef(0);
+
+  useEffect(() => {
+    socket.on("incoming-call", ({ caller, receiver, roomId }) => {
+      callingSound.loop = true;
+      callingSound.play();
+      const toastId = toast(
+        <div className="w-full">
+          <h3 className="w-full font-bold">
+            {caller.username} is Video Calling...
+          </h3>
+
+          <div className="flex w-full justify-end gap-3 mt-2">
+            <button
+              className="bg-green-500 px-2 py-1 rounded"
+              onClick={() => {
+                callingSound.pause();
+                callingSound.currentTime = 0;
+                socket.emit("call-accepted", {
+                  roomId,
+                  callerId: caller._id,
+                });
+
+                navigate(`/call/${roomId}`, {
+                  state: {
+                    receiver: caller,
+                  },
+                });
+
+                toast.dismiss(toastId);
+              }}
+            >
+              Accept
+            </button>
+
+            <button
+              className="bg-red-500 px-2 py-1 rounded"
+              onClick={() => {
+                callingSound.pause();
+                callingSound.currentTime = 0;
+                socket.emit("call-rejected", {
+                  roomId,
+                  caller: caller,
+                  receiver: receiver,
+                });
+                toast.dismiss(toastId);
+              }}
+            >
+              Reject
+            </button>
+          </div>
+        </div>,
+        {
+          duration: Infinity, // 👈 မပျောက်အောင်
+          position: "top-center",
+        },
+      );
+    });
+    return () => {
+      socket.off("incoming-call");
+    };
+  }, []);
 
   useEffect(() => {
     const handler = (data) => {
@@ -65,7 +128,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div>
       <UserProvider>
         <Routes>
           <Route element={<MainLayout />}>
@@ -78,9 +141,10 @@ function App() {
           <Route path="/edit" element={<Edit />} />
           <Route path="/auth/register" element={<Register />} />
           <Route path="/message/:id" element={<Message />} />
+          <Route path="/call/:roomId" element={<VideoCall />} />
         </Routes>
       </UserProvider>
-    </>
+    </div>
   );
 }
 

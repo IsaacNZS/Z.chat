@@ -2,12 +2,77 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../Context";
 import { useContext } from "react";
+import { socket } from "../socket";
+import { toast } from "sonner";
 
 const Call = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [alluser, setAlluser] = useState([]);
   const { onlineUsers, setOnlineUsers } = useContext(UserContext);
+  const [callingUserId, setCallingUserId] = useState(null);
+  const waitingSound = new Audio("/waiting.mp3");
+  const ejectSound = new Audio("/eject.mp3");
+
+  useEffect(() => {
+    const handleCallJoined = ({ roomId }) => {
+      waitingSound.pause();
+      waitingSound.currentTime = 0;
+      ejectSound.play();
+      setCallingUserId(null);
+      navigate(`/call/${roomId}`);
+    };
+
+    socket.on("call-joined", handleCallJoined);
+
+    return () => {
+      socket.off("call-joined", handleCallJoined);
+    };
+  }, [navigate]);
+
+  useEffect(() => {
+    const handleCallJoined = ({ roomId, receiver }) => {
+      waitingSound.pause();
+      waitingSound.currentTime = 0;
+      ejectSound.play();
+      setCallingUserId(null);
+      toast.error(
+        "OMG!😠 " +
+          receiver.username +
+          " rejected your call.😠 Send a message!",
+        {
+          richColors: true,
+          position: "top-center",
+          duration: 5000,
+          action: {
+            label: "Go Chat",
+            onClick: () => navigate(`/message/${receiver._id}`),
+          },
+        },
+      );
+    };
+
+    socket.on("call-rejected", handleCallJoined);
+
+    return () => {
+      socket.off("call-rejected", handleCallJoined);
+    };
+  }, [navigate]);
+
+  const startCall = async (receiver) => {
+    try {
+      const roomId = [user._id, receiver._id].sort().join("-");
+      setCallingUserId(receiver._id);
+
+      socket.emit("call-user", {
+        caller: user,
+        receiver,
+        roomId,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const all = async () => {
     try {
@@ -49,11 +114,8 @@ const Call = () => {
         {alluser?.map((user) => (
           <div
             key={user._id}
-            onClick={() => {
-              navigate(`/message/${user?._id}`);
-            }}
             className={`
-  flex px-3 py-2 border relative overflow-y-scroll mt-3 rounded-[20px] w-[93%]
+  flex px-3 py-2 border relative mt-3 rounded-[20px] w-[93%]
   mx-3 border-red-400 gap-8
   transition-all duration-300
   hover:scale-[1.02]
@@ -90,6 +152,22 @@ const Call = () => {
                 {user?.bio ? user.bio : "❤️GOD BLESS YOU❤️"}
               </p>
             </div>
+            {callingUserId === user._id ? (
+              <button className="text-[#00aeff] animate-pulse text-xl absolute right-5 top-1/2 -translate-y-1/2">
+                <i className="fa-solid fa-phone-volume"></i>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  startCall(user);
+                  waitingSound.play();
+                  waitingSound.loop = true;
+                }}
+                className="text-[#00aeff] text-xl absolute right-5 top-1/2 -translate-y-1/2"
+              >
+                <i className="fa-solid fa-phone"></i>
+              </button>
+            )}
           </div>
         ))}
       </div>

@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stream-io/video-react-sdk": "^1.37.4",
     "@tailwindcss/vite": "^4.3.0",
+    "axios": "^1.16.1",
     "emoji-picker-react": "^4.19.1",
     "firebase": "^12.14.0",
     "react": "^19.2.6",

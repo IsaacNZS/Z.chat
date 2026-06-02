@@ -5,6 +5,7 @@ const dns = require("dns");
 require("dotenv").config();
 const userrouter = require("./routers/userRouters");
 const mesrouter = require("./routers/messageRouter");
+const callrouter = require("./routers/callRouter");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const http = require("http");
@@ -52,6 +53,41 @@ io.on("connection", (socket) => {
 
     if (senderSocketId) {
       io.to(senderSocketId).emit("receive_message", data);
+    }
+  });
+
+  socket.on("call-user", ({ caller, receiver, roomId }) => {
+    const receiverSocket = onlineUsers.get(receiver._id);
+
+    if (receiverSocket) {
+      io.to(receiverSocket).emit("incoming-call", {
+        caller,
+        receiver,
+        roomId,
+      });
+    }
+  });
+
+  socket.on("call-accepted", ({ roomId, callerId }) => {
+    const callerSocket = onlineUsers.get(callerId);
+    console.log("callerSocket =", callerSocket);
+
+    if (callerSocket) {
+      io.to(callerSocket).emit("call-joined", {
+        roomId,
+      });
+    }
+  });
+
+  socket.on("call-rejected", ({ roomId, caller, receiver }) => {
+    const callerSocket = onlineUsers.get(caller._id);
+    console.log("callerSocket =", callerSocket);
+
+    if (callerSocket) {
+      io.to(callerSocket).emit("call-rejected", {
+        roomId,
+        receiver,
+      });
     }
   });
 
@@ -104,6 +140,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/user", userrouter);
 app.use("/message", mesrouter);
+app.use("/call", callrouter);
 
 server.listen(3000, () => {
   (console.clear(), console.log("Server Running"));
