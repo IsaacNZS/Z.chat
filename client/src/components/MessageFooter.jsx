@@ -89,7 +89,7 @@ const MessageFooter = () => {
   }, [input]);
 
   return (
-    <div className="w-full flex flex-col relative">
+    <div className="w-full fixed bottom-1 flex flex-col">
       <form onSubmit={add} className="px-4 py-2 flex items-end justify-between">
         <i
           onClick={() => setEmoji(!emoji)}

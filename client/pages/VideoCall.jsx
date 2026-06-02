@@ -6,9 +6,11 @@ import {
   StreamVideo,
   StreamVideoClient,
   StreamCall,
-  PaginatedGridLayout,
-  CallControls,
 } from "@stream-io/video-react-sdk";
+
+import CallHeader from "../src/components/CallHeader";
+import CallBody from "../src/components/CallBody";
+import CustomCallControls from "../src/components/CallControls";
 
 const VideoCall = () => {
   const { roomId } = useParams();
@@ -22,8 +24,7 @@ const VideoCall = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        // 🔥 IMPORTANT: get REAL logged-in user from API
-        const meRes = await axios.get(`${import.meta.env.VITE_API_URL}/user/`, {
+        const meRes = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
           withCredentials: true,
         });
 
@@ -46,43 +47,44 @@ const VideoCall = () => {
           token: res.data.token,
         });
 
+        const callInstance = streamClient.call("default", roomId);
+
+        await callInstance.join({
+          create: true,
+        });
+
         setClient(streamClient);
-
-        const call = streamClient.call("default", roomId);
-
-        await call.join({ create: true });
-
-        setCall(call);
+        setCall(callInstance);
       } catch (err) {
         console.log(err);
       }
     };
 
     init();
+
+    return () => {
+      call?.leave();
+      client?.disconnectUser();
+    };
   }, [roomId]);
 
-  if (!client || !call) return <div>Loading...</div>;
+  if (!client || !call) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <StreamVideo client={client}>
       <StreamCall call={call}>
-        {/* VIDEO AREA */}
-        <div style={{ height: "100vh", width: "100%", background: "black" }}>
-          <PaginatedGridLayout />
-        </div>
+        <div className="h-screen bg-black relative overflow-hidden">
+          <CallHeader receiver={receiver} />
 
-        {/* CONTROLS */}
-        <div
-          style={{
-            position: "fixed",
-            bottom: 20,
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-            zIndex: 999,
-          }}
-        >
-          <CallControls />
+          <CallBody />
+
+          <CustomCallControls />
         </div>
       </StreamCall>
     </StreamVideo>

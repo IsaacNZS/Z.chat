@@ -89,9 +89,16 @@ function App() {
           position: "top-center",
         },
       );
+      socket.on("call-cancelled", () => {
+        callingSound.pause();
+        callingSound.currentTime = 0;
+        toast.dismiss(toastId);
+      });
     });
+
     return () => {
       socket.off("incoming-call");
+      socket.off("call-cancelled");
     };
   }, []);
 

@@ -70,7 +70,6 @@ io.on("connection", (socket) => {
 
   socket.on("call-accepted", ({ roomId, callerId }) => {
     const callerSocket = onlineUsers.get(callerId);
-    console.log("callerSocket =", callerSocket);
 
     if (callerSocket) {
       io.to(callerSocket).emit("call-joined", {
@@ -79,9 +78,16 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("call-cancelled", (caller) => {
+    const callerSocket = onlineUsers.get(caller._id);
+
+    if (callerSocket) {
+      io.to(callerSocket).emit("call-cancelled", {});
+    }
+  });
+
   socket.on("call-rejected", ({ roomId, caller, receiver }) => {
     const callerSocket = onlineUsers.get(caller._id);
-    console.log("callerSocket =", callerSocket);
 
     if (callerSocket) {
       io.to(callerSocket).emit("call-rejected", {

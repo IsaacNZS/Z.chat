@@ -86,6 +86,17 @@ const Call = () => {
     }
   };
 
+  const cancle = (data) => {
+    setCallingUserId(null);
+    toast.error("You cancelled calling to " + data.username, {
+      richColors: true,
+      position: "top-center",
+      duration: 5000,
+    });
+
+    socket.emit("call-cancelled", data);
+  };
+
   const userinfo = async () => {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/user/`, {
@@ -153,7 +164,14 @@ const Call = () => {
               </p>
             </div>
             {callingUserId === user._id ? (
-              <button className="text-[#00aeff] animate-pulse text-xl absolute right-5 top-1/2 -translate-y-1/2">
+              <button
+                onClick={() => {
+                  (cancle(user),
+                    waitingSound.pause(),
+                    (waitingSound.currentTime = 0));
+                }}
+                className="text-[#00aeff] animate-pulse text-xl absolute right-5 top-1/2 -translate-y-1/2"
+              >
                 <i className="fa-solid fa-phone-volume"></i>
               </button>
             ) : (
