@@ -12,6 +12,7 @@ import {
 } from "@stream-io/video-react-sdk";
 
 import "@stream-io/video-react-sdk/dist/css/styles.css";
+import OneToOneLayout from "../src/components/OnetooneLayout";
 
 const VideoCall = () => {
   const { roomId } = useParams();
@@ -98,7 +99,7 @@ const VideoCall = () => {
             </div>
 
             {/* Video Layout */}
-            <SpeakerLayout participantsBarPosition="bottom" />
+            <OneToOneLayout />
 
             {/* Default Stream Controls */}
             <CallControls />
