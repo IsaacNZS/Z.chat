@@ -30,7 +30,7 @@ const CustomControls = ({ roomId }) => {
   };
 
   return (
-    <div className="flex items-center justify-center gap-4 bg-black/60 p-3 rounded-full">
+    <div className="flex w-full items-center justify-center gap-4 bg-black/60 p-3 rounded-full">
       {/* Mute / Unmute Mic */}
       <ToggleAudioPublishingButton />
 

@@ -7,10 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Toaster />
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
+  <BrowserRouter>
+    <Toaster />
+    <App />
+  </BrowserRouter>,
 );

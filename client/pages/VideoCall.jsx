@@ -6,8 +6,6 @@ import {
   StreamVideo,
   StreamVideoClient,
   StreamCall,
-  SpeakerLayout,
-  CallControls,
   StreamTheme,
 } from "@stream-io/video-react-sdk";
 
@@ -15,17 +13,32 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import OneToOneLayout from "../src/components/OnetooneLayout";
 import CustomControls from "../src/components/CustomControls";
 import { socket } from "../socket";
+import { WaitingScreen } from "../src/components/WaitingScreen";
 
 const VideoCall = () => {
   const { roomId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-
-  const receiver = location.state?.receiver;
-  const caller = location.state?.caller;
-
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
+  const [duration, setDuration] = useState("00:00");
+
+  useEffect(() => {
+    if (!call) return;
+
+    const startTime = Date.now();
+
+    const interval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - startTime) / 1000);
+
+      const mins = String(Math.floor(seconds / 60)).padStart(2, "0");
+      const secs = String(seconds % 60).padStart(2, "0");
+
+      setDuration(`${mins}:${secs}`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [call]);
 
   useEffect(() => {
     let streamClient;
@@ -67,6 +80,13 @@ const VideoCall = () => {
           create: true,
         });
 
+        await callInstance.camera.enable({
+          videoConstraints: {
+            width: 1280,
+            height: 720,
+          },
+        });
+
         setClient(streamClient);
         setCall(callInstance);
       } catch (error) {
@@ -90,7 +110,7 @@ const VideoCall = () => {
     if (!call) return;
     const handleCallEnded = async () => {
       try {
-        await call.endCall(); // 👈 THIS IS THE KEY FIX
+        await call.endCall();
       } catch (e) {
         console.log(e);
       }
@@ -105,6 +125,15 @@ const VideoCall = () => {
     };
   }, [call]);
 
+  useEffect(() => {
+    if (!call) return;
+
+    call.setPreferredIncomingVideoResolution({
+      width: 1280,
+      height: 720,
+    });
+  }, [call]);
+
   if (!client || !call) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -117,19 +146,16 @@ const VideoCall = () => {
     <StreamVideo client={client}>
       <StreamCall call={call}>
         <StreamTheme>
-          <div className="h-screen relative">
-            {/* Header */}
-            <div className="absolute top-5 left-0 right-0 z-50 text-center text-white">
-              <h2 className="font-bold text-lg">
-                {receiver?.username || "Video Call"}
-              </h2>
+          <div className="h-screen text-white w-full relative">
+            <div className="absolute z-20 top-4 left-4 bg-black/50 px-3 py-1 rounded">
+              {duration}
             </div>
-
+            <WaitingScreen />
             {/* Video Layout */}
             <OneToOneLayout />
 
             {/* Default Stream Controls */}
-            <div className="absolute bottom-3 left-0 right-0 z-50">
+            <div className="absolute bottom-0 left-0 right-0 z-50">
               <CustomControls roomId={roomId} />
             </div>
           </div>
