@@ -102,7 +102,9 @@ const VideoCall = () => {
             <OneToOneLayout />
 
             {/* Default Stream Controls */}
-            <CallControls />
+            <div className="absolute bottom-3 left-0 right-0 z-50">
+              <CallControls />
+            </div>
           </div>
         </StreamTheme>
       </StreamCall>

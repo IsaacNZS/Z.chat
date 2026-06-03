@@ -24,7 +24,10 @@ const OneToOneLayout = () => {
 
       {localParticipant && (
         <div className="absolute top-4 right-4 w-36 h-52 overflow-hidden rounded-xl border border-white">
-          <ParticipantView participant={localParticipant} />
+          <ParticipantView
+            participant={localParticipant}
+            className="w-full h-full"
+          />
         </div>
       )}
     </div>
