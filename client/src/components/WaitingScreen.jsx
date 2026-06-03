@@ -16,7 +16,7 @@ export const WaitingScreen = () => {
           height: "60px",
         }}
       />
-      Waiting for participant...
+      <p className="text-3xl animate-pulse">Waiting for participant...</p>
     </div>
   );
 };

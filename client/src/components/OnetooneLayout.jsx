@@ -16,18 +16,13 @@ const OneToOneLayout = () => {
 
   return (
     <div className="w-full h-full relative bg-black">
-      {!remoteParticipant && (
-        <div className="w-full h-full flex items-center justify-center text-white">
-          <img src="/waiting.gif" alt="logo" className="w-15 h-15" />
-          Waiting for participant...
-        </div>
-      )}
-
       {mainParticipant && (
-        <ParticipantView
-          participant={mainParticipant}
-          className="w-full h-full"
-        />
+        <div className="w-full h-full">
+          <ParticipantView
+            participant={mainParticipant}
+            className="w-full h-full"
+          />
+        </div>
       )}
 
       {previewParticipant && (
