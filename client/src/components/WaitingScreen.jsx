@@ -7,16 +7,16 @@ export const WaitingScreen = () => {
   if (participants.length >= 2) return null;
 
   return (
-    <div className="w-full h-full flex items-center justify-center text-white">
+    <div className="w-full h-full flex flex-col absolute top-5 left-0 items-center justify-center text-white">
       <img
         src="/waiting.gif"
         alt="logo"
         style={{
-          width: "60px",
-          height: "60px",
+          width: "100px",
+          height: "100px",
         }}
       />
-      <p className="text-3xl animate-pulse">Waiting for participant...</p>
+      <p className="text-2xl animate-pulse">Waiting for participant...</p>
     </div>
   );
 };
