@@ -147,7 +147,7 @@ const VideoCall = () => {
       <StreamCall call={call}>
         <StreamTheme>
           <div className="h-screen text-white w-full relative">
-            <div className="absolute z-20 top-4 left-4 bg-black/50 px-3 py-1 rounded">
+            <div className="absolute z-20 top-4 left-10 bg-black/30 px-3 py-1 rounded">
               {duration}
             </div>
             <WaitingScreen />
