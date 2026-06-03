@@ -1,4 +1,4 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -13,12 +13,16 @@ import {
 
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import OneToOneLayout from "../src/components/OnetooneLayout";
+import CustomControls from "../src/components/CustomControls";
+import { socket } from "../socket";
 
 const VideoCall = () => {
   const { roomId } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const receiver = location.state?.receiver;
+  const caller = location.state?.caller;
 
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
@@ -78,6 +82,29 @@ const VideoCall = () => {
     };
   }, [roomId]);
 
+  useEffect(() => {
+    socket.emit("join-room", { roomId });
+  }, [roomId]);
+
+  useEffect(() => {
+    if (!call) return;
+    const handleCallEnded = async () => {
+      try {
+        await call.endCall(); // 👈 THIS IS THE KEY FIX
+      } catch (e) {
+        console.log(e);
+      }
+
+      navigate("/Call");
+    };
+
+    socket.on("call-ended", handleCallEnded);
+
+    return () => {
+      socket.off("call-ended", handleCallEnded);
+    };
+  }, [call]);
+
   if (!client || !call) {
     return (
       <div className="h-screen flex items-center justify-center">
@@ -103,7 +130,7 @@ const VideoCall = () => {
 
             {/* Default Stream Controls */}
             <div className="absolute bottom-3 left-0 right-0 z-50">
-              <CallControls />
+              <CustomControls roomId={roomId} />
             </div>
           </div>
         </StreamTheme>

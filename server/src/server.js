@@ -97,6 +97,15 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("join-room", ({ roomId }) => {
+    socket.join(roomId);
+  });
+
+  socket.on("call-ended", ({ roomId }) => {
+    console.log("Call Ended for Room:", roomId);
+    io.to(roomId).emit("call-ended");
+  });
+
   socket.on("seen_message", async (data) => {
     await Message.updateMany(
       {

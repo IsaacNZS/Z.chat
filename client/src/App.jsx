@@ -58,6 +58,7 @@ function App() {
                 navigate(`/call/${roomId}`, {
                   state: {
                     receiver: caller,
+                    caller: receiver,
                   },
                 });
 
