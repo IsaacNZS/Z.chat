@@ -6,11 +6,12 @@ import {
   StreamVideo,
   StreamVideoClient,
   StreamCall,
+  SpeakerLayout,
+  CallControls,
+  StreamTheme,
 } from "@stream-io/video-react-sdk";
 
-import CallHeader from "../src/components/CallHeader";
-import CallBody from "../src/components/CallBody";
-import CustomCallControls from "../src/components/CallControls";
+import "@stream-io/video-react-sdk/dist/css/styles.css";
 
 const VideoCall = () => {
   const { roomId } = useParams();
@@ -22,32 +23,40 @@ const VideoCall = () => {
   const [call, setCall] = useState(null);
 
   useEffect(() => {
-    const init = async () => {
+    let streamClient;
+    let callInstance;
+
+    const initCall = async () => {
       try {
+        // Current User
         const meRes = await axios.get(`${import.meta.env.VITE_API_URL}/user`, {
           withCredentials: true,
         });
 
         const me = meRes.data.result;
 
-        const res = await axios.post(
+        // Get Stream Token
+        const tokenRes = await axios.post(
           `${import.meta.env.VITE_API_URL}/call/token`,
           {
             userId: me._id,
             name: me.username,
           },
+          {
+            withCredentials: true,
+          },
         );
 
-        const streamClient = new StreamVideoClient({
-          apiKey: res.data.apiKey,
+        streamClient = new StreamVideoClient({
+          apiKey: tokenRes.data.apiKey,
           user: {
             id: me._id,
             name: me.username,
           },
-          token: res.data.token,
+          token: tokenRes.data.token,
         });
 
-        const callInstance = streamClient.call("default", roomId);
+        callInstance = streamClient.call("default", roomId);
 
         await callInstance.join({
           create: true,
@@ -55,16 +64,16 @@ const VideoCall = () => {
 
         setClient(streamClient);
         setCall(callInstance);
-      } catch (err) {
-        console.log(err);
+      } catch (error) {
+        console.error(error);
       }
     };
 
-    init();
+    initCall();
 
     return () => {
-      call?.leave();
-      client?.disconnectUser();
+      callInstance?.leave();
+      streamClient?.disconnectUser();
     };
   }, [roomId]);
 
@@ -79,13 +88,22 @@ const VideoCall = () => {
   return (
     <StreamVideo client={client}>
       <StreamCall call={call}>
-        <div className="h-screen bg-black relative overflow-hidden">
-          <CallHeader receiver={receiver} />
+        <StreamTheme>
+          <div className="h-screen relative">
+            {/* Header */}
+            <div className="absolute top-5 left-0 right-0 z-50 text-center text-white">
+              <h2 className="font-bold text-lg">
+                {receiver?.username || "Video Call"}
+              </h2>
+            </div>
 
-          <CallBody />
+            {/* Video Layout */}
+            <SpeakerLayout participantsBarPosition="bottom" />
 
-          <CustomCallControls />
-        </div>
+            {/* Default Stream Controls */}
+            <CallControls />
+          </div>
+        </StreamTheme>
       </StreamCall>
     </StreamVideo>
   );
