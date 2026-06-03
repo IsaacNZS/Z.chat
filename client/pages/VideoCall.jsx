@@ -136,7 +136,7 @@ const VideoCall = () => {
 
   if (!client || !call) {
     return (
-      <div className="w-full h-full flex flex-col absolute top-5 left-0 items-center justify-center text-white">
+      <div className="w-full h-full flex flex-col absolute top-0 left-0 items-center justify-center text-white">
         <img
           src="/waiting.gif"
           alt="logo"
@@ -154,7 +154,7 @@ const VideoCall = () => {
     <StreamVideo client={client}>
       <StreamCall call={call}>
         <StreamTheme>
-          <div className="h-screen text-white w-full relative">
+          <div className="fixed inset-0 w-full h-dvh overflow-hidden bg-black text-white">
             <div className="absolute z-20 top-4 left-15 bg-black/50 px-3 py-1 rounded">
               {duration}
             </div>
