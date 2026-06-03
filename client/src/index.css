@@ -68,3 +68,15 @@ body {
     opacity: 1;
   }
 }
+.str-video__participant-view {
+  aspect-ratio: unset !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
+
+.str-video__participant-view video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
